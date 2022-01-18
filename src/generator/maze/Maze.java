@@ -145,6 +145,19 @@ public class Maze {
         return dfsAlgorithm(x, y, maze);
     }
 
+    /**
+     * <strong>DFS Algorithms </strong> <br>
+     * - Choose a starting cell in the field and add it to the stack. <br>
+     * - While there is a cell to be handled in the stack: <br>
+     *      1. Pop cell from the top of the stack. <br>
+     *      2. Connect and visit all available neighbors from the bottom, left, right, top and unvisited. <br>
+     *      3. Randomly select the one to be on the top and Push those neighbors on the stack. <br>
+     *
+     * @param x is the x coordinate of the starting point
+     * @param y is the y coordinate of the starting point
+     * @param maze is the base maze
+     * @return a random maze created by DFS Algorithm
+     */
     private static Maze dfsAlgorithm(int x, int y, Maze maze) {
         Random random = new Random(System.nanoTime());
         Stack<Cell> stack = new Stack<>();
@@ -170,6 +183,44 @@ public class Maze {
 
                 stack.add(neighbors.get(rand));
                 neighbors.get(rand).setAvailable(false);
+            }
+        }
+
+        return maze;
+    }
+
+    /**
+     * <strong>Binary Tree Algorithms </strong> <br>
+     * - For each existing cell in the grid: <br>
+     *      1. Get if they exist, north or west neighbors. <br>
+     *      2. Toss a coin to connect with one of them. <br>
+     * - It is already done! <br>
+     *
+     * @param maze is the base maze
+     * @return a random maze created by DFS Algorithm
+     */
+    private static Maze binaryTreeAlgorithm(Maze maze) {
+        Random random = new Random(System.nanoTime());
+
+        for (int x = 0; x < maze.height; x++) {
+            for (int y = 0; u < maze.width; y++) {
+                if (maze.getCell(x, y) != null) {
+                    ArrayList<Cell> neighbors = new ArrayList<>();
+
+                    if (x > 0) {
+                        neighbors.add(maze.getCell(x-1, y));
+                    }
+                    if (y > 0) {
+                        neighbors.add(maze.getCell(x, y-1));
+                    }
+
+                    if (neighbors.isEmpty()) {
+                        continue;
+                    }
+
+                    int coin = Math.abs(random.nextInt()) % (neighbors.size());
+                    maze.getCell(x, y).connect(neighbors.get(coin));
+                }
             }
         }
 
