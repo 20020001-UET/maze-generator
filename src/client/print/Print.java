@@ -20,10 +20,10 @@ public class Print {
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     switch (data.get(i).get(j)) {
-                        case 1 -> {
+                        case 1, 2 -> {
                             fileContent.append("1");
                         }
-                        case 0 -> {
+                        case 0, 3 -> {
                             fileContent.append("0");
                         }
                         case -1 -> {

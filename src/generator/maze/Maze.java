@@ -108,9 +108,6 @@ public class Maze {
                         data.get(pathX).set(pathY, 0);
                     }
                 }
-                else {
-                    data.get(x * 2).set(y * 2, -1);
-                }
             }
         }
 
@@ -203,7 +200,7 @@ public class Maze {
         Random random = new Random(System.nanoTime());
 
         for (int x = 0; x < maze.height; x++) {
-            for (int y = 0; u < maze.width; y++) {
+            for (int y = 0; y < maze.width; y++) {
                 if (maze.getCell(x, y) != null) {
                     ArrayList<Cell> neighbors = new ArrayList<>();
 

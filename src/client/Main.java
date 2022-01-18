@@ -2,6 +2,7 @@ package client;
 
 import client.print.Print;
 import generator.circle.CircleGenerator;
+import generator.donut.DonutGenerator;
 import generator.maze.Maze;
 import generator.multipleCircle.MultipleCircleGenerator;
 
@@ -19,9 +20,14 @@ public class Main {
         maze.build(multipleCircleGenerator.generate());
         maze.print("D:/Study/Code/Java/maze-generator/data/maze.txt");
          */
-        CircleGenerator circleGenerator = new CircleGenerator(25);
-        //Maze maze = Maze.dfs(30, 30, 0, 0);
-        Maze maze = Maze.dfs(circleGenerator.generate(), 12, 12);
+
+        DonutGenerator donutGenerator = new DonutGenerator();
+        donutGenerator.addRadii(100, 1);
+        donutGenerator.addRadii(20, 0);
+        donutGenerator.addRadii(4, 2);
+        donutGenerator.addRadii(3, 3);
+
+        Maze maze = Maze.dfs(donutGenerator.generate(), 41, 41);
         Print.print(maze.export(), "D:/Study/Code/Java/maze-generator/data/maze.txt");
     }
 }
