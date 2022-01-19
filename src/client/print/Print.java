@@ -26,6 +26,9 @@ public class Print {
                         case 0, 3 -> {
                             fileContent.append("0");
                         }
+                        case 4 -> {
+                            fileContent.append("4");
+                        }
                         case -1 -> {
                             fileContent.append(" ");
                         }

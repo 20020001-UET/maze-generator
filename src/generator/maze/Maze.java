@@ -2,17 +2,19 @@ package generator.maze;
 
 import generator.maze.cell.Cell;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
 public class Maze {
 
-    private final int[] changeX = {0, 1, 0, -1};
-    private final int[] changeY = {-1, 0, 1, 0};
+    private final int[] changeX = {0, 1, 0, -1, 1, 1, -1, -1};
+    private final int[] changeY = {-1, 0, 1, 0, 1, -1, 1, -1};
 
     private final Cell[][] maze;
     private ArrayList<ArrayList<Integer>> data;
+    private ArrayList<Point> pointIns;
     private final int height;
     private final int width;
 
@@ -25,6 +27,7 @@ public class Maze {
                 maze[x][y] = new Cell(x, y);
             }
         }
+        pointIns = new ArrayList<>();
     }
 
     public Maze(ArrayList<ArrayList<Integer>> data) {
@@ -32,13 +35,35 @@ public class Maze {
         this.height = (data.size() - 1) / 2;
         this.width = (data.get(this.height-1).size() - 1) / 2;
         maze = new Cell[height+1][width+1];
+        pointIns = new ArrayList<>();
         for (int x = 0; x <= height; x++) {
             for (int y = 0; y <= width; y++) {
                 if (data.get(x*2).get(y*2) == 1) {
                     maze[x][y] = new Cell(x, y);
+
+                    int xData = x*2;
+                    int yData = y*2;
+                    for (int i = 0; i < 8; i++) {
+                        int newX = xData + changeX[i];
+                        int newY = yData + changeY[i];
+                        if (newX >= 0 && newX < data.size() && newY >= 0 && newY < data.get(0).size()) {
+                            if (data.get(newX).get(newY) == 4) {
+                                pointIns.add(new Point(x, y));
+                                data.get(newX).set(newY, 0);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (data.get(x*2).get(y*2) == 4) {
+                    maze[x][y] = new Cell(x, y);
+                    pointIns.add(new Point(x, y));
+                    data.get(x*2).set(y*2, 0);
                 }
             }
         }
+        System.out.println(pointIns);
     }
 
     public Cell getCell(int x, int y) {
@@ -56,6 +81,12 @@ public class Maze {
             int y = cell.getY() + changeY[i];
             if (checkPoint(x, y) && getCell(x, y) != null) {
                 if (getCell(x, y).isAvailable()) {
+                    if (this.data != null) {
+                        int pathX = x + cell.getX();
+                        int pathY = y + cell.getY();
+                        if (this.data.get(pathX).get(pathY) != 1)
+                            continue;
+                    }
                     availableNeighbors.add(getCell(x, y));
                 }
             }
@@ -96,7 +127,7 @@ public class Maze {
                     data.get(x * 2).set(y * 2, 0);
                     ArrayList<Cell> neighbors = getCell(x, y).getConnectCell();
 
-                    if (neighbors == null) {
+                    if (neighbors.isEmpty()) {
                         continue;
                     }
 
@@ -125,8 +156,8 @@ public class Maze {
     public static Maze dfs(int height, int width, int x, int y) {
 
         Maze maze = new Maze(height, width);
-
-        return dfsAlgorithm(x, y, maze);
+        dfsAlgorithm(x, y, maze);
+        return maze;
     }
     /**
      * Maze generator - Depth First Search (DFS)
@@ -138,8 +169,8 @@ public class Maze {
     public static Maze dfs(ArrayList<ArrayList<Integer>> data, int x, int y) {
 
         Maze maze = new Maze(data);
-
-        return dfsAlgorithm(x, y, maze);
+        dfsAlgorithm(x, y, maze);
+        return maze;
     }
 
     /**
@@ -153,9 +184,8 @@ public class Maze {
      * @param x is the x coordinate of the starting point
      * @param y is the y coordinate of the starting point
      * @param maze is the base maze
-     * @return a random maze created by DFS Algorithm
      */
-    private static Maze dfsAlgorithm(int x, int y, Maze maze) {
+    public static void dfsAlgorithm(int x, int y, Maze maze) {
         Random random = new Random(System.nanoTime());
         Stack<Cell> stack = new Stack<>();
         stack.add(maze.getCell(x, y));
@@ -182,8 +212,6 @@ public class Maze {
                 neighbors.get(rand).setAvailable(false);
             }
         }
-
-        return maze;
     }
 
     /**
@@ -194,9 +222,8 @@ public class Maze {
      * - It is already done! <br>
      *
      * @param maze is the base maze
-     * @return a random maze created by DFS Algorithm
      */
-    private static Maze binaryTreeAlgorithm(Maze maze) {
+    public static void binaryTreeAlgorithm(Maze maze) {
         Random random = new Random(System.nanoTime());
 
         for (int x = 0; x < maze.height; x++) {
@@ -220,7 +247,25 @@ public class Maze {
                 }
             }
         }
+    }
 
-        return maze;
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void generate() {
+        if (this.data.isEmpty())
+            return;
+
+        if (this.pointIns.isEmpty())
+            return;
+
+        for (Point pointIn : pointIns) {
+            dfsAlgorithm(pointIn.x, pointIn.y, this);
+        }
     }
 }
