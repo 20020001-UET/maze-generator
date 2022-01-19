@@ -63,7 +63,6 @@ public class Maze {
                 }
             }
         }
-        System.out.println(pointIns);
     }
 
     public Cell getCell(int x, int y) {
@@ -95,16 +94,17 @@ public class Maze {
     }
 
     public ArrayList<ArrayList<Integer>> export() {
-        ArrayList<ArrayList<Integer>> data = new ArrayList<>();
+        Random random = new Random();
+        ArrayList<ArrayList<Integer>> exportData = new ArrayList<>();
 
         for (int x = 0; x <= height; x++) {
-            data.add(new ArrayList<>());
+            exportData.add(new ArrayList<>());
             if (x != height-1) {
-                data.add(new ArrayList<>());
+                exportData.add(new ArrayList<>());
             }
         }
 
-        for (ArrayList<Integer> value : data) {
+        for (ArrayList<Integer> value : exportData) {
             for (int y = 0; y <= width; y++) {
                 value.add(1);
                 if (y != width-1) {
@@ -116,7 +116,7 @@ public class Maze {
         if (this.data != null) {
             for (int x = 0; x < this.data.size(); x++) {
                 for (int y = 0; y < this.data.get(x).size(); y++) {
-                    data.get(x).set(y, this.data.get(x).get(y));
+                    exportData.get(x).set(y, this.data.get(x).get(y));
                 }
             }
         }
@@ -124,25 +124,118 @@ public class Maze {
         for (int x = 0; x <= height; x++) {
             for (int y = 0; y <= width; y++) {
                 if (getCell(x, y) != null) {
-                    data.get(x * 2).set(y * 2, 0);
+                    exportData.get(x * 2).set(y * 2, 0);
                     ArrayList<Cell> neighbors = getCell(x, y).getConnectCell();
 
                     if (neighbors.isEmpty()) {
                         continue;
                     }
 
-                    System.out.println(neighbors.size());
-
                     for (Cell neighbor : neighbors) {
                         int pathX = x + neighbor.getX();
                         int pathY = y + neighbor.getY();
-                        data.get(pathX).set(pathY, 0);
+                        exportData.get(pathX).set(pathY, 0);
                     }
                 }
             }
         }
 
-        return data;
+        for (int x = 0; x <= height*2; x++) {
+            for (int y = 0; y <= width*2; y++) {
+                if (exportData.get(x).get(y) == 2) {
+                    int realX = x - height;
+                    int realY = y - width;
+
+                    int up = 0;
+                    int down = 0;
+
+                    if (realX == realY || realX == -realY) {
+                        if (x < height*2) up = exportData.get(x+1).get(y);
+                        if (x > 0) down = exportData.get(x-1).get(y);
+
+                        if (up == down && up == 1) {
+                            int rand = Math.abs(random.nextInt()) % 2;
+                            if (x < height * 2) exportData.get(x + 1).set(y, rand);
+                            if (x > 0) exportData.get(x - 1).set(y, rand);
+                        }
+                        continue;
+                    }
+
+                    boolean check = true;
+                    int newData;
+
+                    if (realX == 0) {
+                        if (x < height*2) up = exportData.get(x+1).get(y);
+                        if (x > 0) down = exportData.get(x-1).get(y);
+                        check = false;
+                    }
+
+                    if (realY == 0) {
+                        if (y < width*2) up = exportData.get(x).get(y+1);
+                        if (y > 0) down = exportData.get(x).get(y-1);
+                        check = false;
+                    }
+
+                    if (check)
+                        continue;
+
+                    if (up != down) {
+                        newData = 0;
+                    }
+                    else {
+                        if (up == 1) {
+                            newData = 0;
+                        }
+                        else {
+                            newData = 1;
+                        }
+                    }
+
+                    exportData.get(x).set(y, newData);
+                }
+            }
+        }
+
+        for (int x = 0; x <= height*2; x++) {
+            for (int time = 0; time < 2; time++) {
+                int y = x;
+                if (time == 1) {
+                    y = -(x - height) + width;
+                }
+                if (exportData.get(x).get(y) == 2) {
+                    boolean chk = true;
+                    int cnt = 0;
+                    int countCell = 0;
+                    for (int i = 0; i < 4; i++) {
+                        int newX = x + changeX[i];
+                        int newY = y + changeY[i];
+                        if (newX >= 0 && newX <= height * 2 && newY >= 0 && newY <= width * 2) {
+                            if (exportData.get(newX).get(newY) == 0) {
+                                cnt++;
+                            }
+                            if (exportData.get(newX).get(newY) == -1) {
+                                countCell++;
+                            }
+                        }
+                        else {
+                            countCell++;
+                        }
+                    }
+
+                    if (cnt >= 2) {
+                        chk = false;
+                    }
+
+                    if (chk && countCell == 0) {
+                        exportData.get(x).set(y, 0);
+                    } else {
+                        exportData.get(x).set(y, 1);
+                    }
+                }
+            }
+        }
+
+        return exportData;
     }
 
     /**
