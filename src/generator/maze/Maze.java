@@ -63,6 +63,8 @@ public class Maze {
                 }
             }
         }
+
+        //System.out.println(pointIns);
     }
 
     public Cell getCell(int x, int y) {
@@ -210,10 +212,14 @@ public class Maze {
                         int newX = x + changeX[i];
                         int newY = y + changeY[i];
                         if (newX >= 0 && newX <= height * 2 && newY >= 0 && newY <= width * 2) {
-                            if (exportData.get(newX).get(newY) == 0) {
+                            int value = exportData.get(newX).get(newY);
+                            if (value == 0 || value == 7) {
                                 cnt++;
                             }
-                            if (exportData.get(newX).get(newY) == -1) {
+                            if (value == -1) {
+                                countCell++;
+                            }
+                            if (value == 5) {
                                 countCell++;
                             }
                         }
@@ -231,6 +237,10 @@ public class Maze {
                     } else {
                         exportData.get(x).set(y, 1);
                     }
+                }
+
+                if (exportData.get(x).get(y) == 5) {
+                    exportData.get(x).set(y, 1);
                 }
             }
         }

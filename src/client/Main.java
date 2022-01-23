@@ -25,6 +25,8 @@ public class Main {
         maze.print("D:/Study/Code/Java/maze-generator/data/maze.txt");
          */
 
+        int maxRadii = 87;
+
         Line horizontal = new Line(0, 1, 0);
         Line vertical = new Line(1, 0, 0);
         Line mainDiagonal = new Line(1, 1, 0);
@@ -32,19 +34,21 @@ public class Main {
 
         MazeData mazeData = new MazeData();
 
-        mazeData.addRadii(101, 2, true);
-        mazeData.addRadii(100, 1, true);
-        mazeData.addRadii(20, 0, true);
+        mazeData.addRadii(maxRadii, 6, false);
+        mazeData.addRadii(maxRadii-1, 5, true);
+        mazeData.addRadii(maxRadii-6, 2, true);
+        mazeData.addRadii(maxRadii-7, 1, true);
+        mazeData.addRadii(20, 7, true);
         mazeData.addRadii(4, 2, true);
         mazeData.addRadii(3, 3, false);
 
         mazeData.addFunction(horizontal);
         mazeData.addFunction(vertical);
-        mazeData.addFunction(mainDiagonal);
-        mazeData.addFunction(subDiagonal);
+        //mazeData.addFunction(mainDiagonal);
+        //mazeData.addFunction(subDiagonal);
 
-        PointInGenerator wayIn = new PointInGenerator(101,101, 4);
-        PointOutGenerator wayOut = new PointOutGenerator(101, 4, 0);
+        PointInGenerator wayIn = new PointInGenerator(maxRadii,maxRadii-6, 4);
+        PointOutGenerator wayOut = new PointOutGenerator(maxRadii, 4, 0);
 
         DoubleLine horizontalMainDiagonal = new DoubleLine(0.414213562373, 1, 0);
         DoubleLine verticalMainDiagonal = new DoubleLine(2.41421356237, 1, 0);
